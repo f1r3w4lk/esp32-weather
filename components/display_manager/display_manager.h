@@ -23,6 +23,11 @@ void display_draw_text_6x8(int x, int y, const char *text);
 void display_draw_char_12x16(int x, int y, char c);
 void display_draw_text_12x16(int x, int y, const char *text);
 
+// Common functions
+void display_show_wifi_connecting(void);
+void display_show_wifi_connected(void);
+
+
 #ifdef __cplusplus
 }
 #endif

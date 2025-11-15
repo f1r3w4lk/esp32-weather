@@ -6,6 +6,7 @@
 #include "weather_handler.h"
 #include "display_manager.h"
 #include "display_assets.h"
+#include "gpio_handler.h"
 
 static const char *TAG = "MAIN";
 
@@ -13,26 +14,24 @@ void app_main(void)
 {
     ESP_LOGI(TAG, "==== ESP32 Weather Display v2 ====");
 
+    // Gpio Handler Initialization
+    gpio_handler_init();
+
     /* Display Initialization */
     display_init();
 
-    display_draw_icon(0, 4, 24, 24, icon_wifi_off);
-    display_draw_text_6x8(40, 5, "Connecting");
-    display_draw_text_6x8(58, 18, "WiFi");
-    display_refresh();
+    // Show Icon and Text of WiFi Connected
+    display_show_wifi_connecting();
 
-    // Start the WiFi Connection
-    wifi_manager_init();
+    // Start the WiFi Connection, check if button pressed if yes, enter in config mode
+    wifi_manager_init(gpio_handler_is_config_button_pressed());
 
     // Wait WiFi Connection before follow the next step (the best approach is substitute by event callback)
     vTaskDelay(pdMS_TO_TICKS(10000));
 
-    display_clear();
-    display_draw_icon(0, 4, 24, 24, icon_wifi);
-    display_draw_text_6x8(58, 5, "Wifi");
-    display_draw_text_6x8(41, 18, "Connected");
-    display_refresh();
-
+    // Show Icon and Text of WiFi Connected
+    display_show_wifi_connected();
+    
     // Struct to store weather data
     weather_data_t weather;
 

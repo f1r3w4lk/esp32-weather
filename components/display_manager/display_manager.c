@@ -175,3 +175,20 @@ void display_refresh(void)
 {
     esp_lcd_panel_draw_bitmap(panel_handle, 0, 0, LCD_H_RES, LCD_V_RES, framebuffer);
 }
+
+void display_show_wifi_connecting(void)
+{
+    display_draw_icon(0, 4, 24, 24, icon_wifi_off);
+    display_draw_text_6x8(40, 5, "Connecting");
+    display_draw_text_6x8(58, 18, "WiFi");
+    display_refresh();
+}
+
+void display_show_wifi_connected(void)
+{
+    display_clear();
+    display_draw_icon(0, 4, 24, 24, icon_wifi);
+    display_draw_text_6x8(58, 5, "Wifi");
+    display_draw_text_6x8(41, 18, "Connected");
+    display_refresh();
+}
