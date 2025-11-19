@@ -1,16 +1,15 @@
 #include "wifi_manager.h"
+#include "http_server.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_netif.h"
 #include "nvs_manager.h"
-#include "esp_http_server.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <string.h>
 
 static const char *TAG = "WIFI_MANAGER";
-static httpd_handle_t server = NULL;
 static bool wifi_initialized = false;
 
 /* --- Forward declarations --- */
@@ -19,58 +18,6 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base,
                                int32_t event_id, void *event_data);
 static void wifi_init_sta(const char *ssid, const char *pass);
 static void wifi_init_softap(void);
-static void start_config_server(void);
-
-/* --- HTTP handlers (keeps simple form POST) --- */
-static esp_err_t root_get_handler(httpd_req_t *req)
-{
-    const char *html =
-        "<!DOCTYPE html><html><body>"
-        "<h2>ESP Wi-Fi Config</h2>"
-        "<form action=\"/config\" method=\"post\">"
-        "SSID:<br><input name=\"ssid\"><br>"
-        "Password:<br><input name=\"pass\" type=\"password\"><br><br>"
-        "<input type=\"submit\" value=\"Salvar\">"
-        "</form></body></html>";
-    httpd_resp_send(req, html, HTTPD_RESP_USE_STRLEN);
-    return ESP_OK;
-}
-
-static esp_err_t config_post_handler(httpd_req_t *req)
-{
-    char buf[256];
-    int ret = httpd_req_recv(req, buf, sizeof(buf) - 1);
-    if (ret <= 0) {
-        httpd_resp_send_500(req);
-        return ESP_FAIL;
-    }
-    buf[ret] = '\0';
-
-    char ssid[64] = {0}, pass[64] = {0};
-    /* form-urlencoded payload */
-    sscanf(buf, "ssid=%63[^&]&pass=%63s", ssid, pass);
-
-    ESP_LOGI(TAG, "Received SSID='%s' PASS len=%d", ssid, (int)strlen(pass));
-    nvs_manager_save_str("wifi_ssid", ssid);
-    nvs_manager_save_str("wifi_pass", pass);
-
-    httpd_resp_sendstr(req, "Credenciais salvas. Reiniciando...");
-    vTaskDelay(pdMS_TO_TICKS(1500));
-    esp_restart();
-    return ESP_OK;
-}
-
-static const httpd_uri_t root_get = {
-    .uri = "/",
-    .method = HTTP_GET,
-    .handler = root_get_handler,
-};
-
-static const httpd_uri_t config_post = {
-    .uri = "/config",
-    .method = HTTP_POST,
-    .handler = config_post_handler,
-};
 
 /* --- base init (run once) --- */
 static void base_init_once(void)
@@ -85,19 +32,6 @@ static void base_init_once(void)
 
     wifi_initialized = true;
     ESP_LOGI(TAG, "Base Wi-Fi subsystem initialized");
-}
-
-/* --- start config HTTP server --- */
-static void start_config_server(void)
-{
-    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    if (httpd_start(&server, &config) == ESP_OK) {
-        httpd_register_uri_handler(server, &root_get);
-        httpd_register_uri_handler(server, &config_post);
-        ESP_LOGI(TAG, "HTTP config server started");
-    } else {
-        ESP_LOGE(TAG, "Failed to start config HTTP server");
-    }
 }
 
 /* --- Wi-Fi event handler --- */
@@ -173,7 +107,7 @@ static void wifi_init_softap(void)
     ESP_ERROR_CHECK(esp_wifi_start());
 
     /* start HTTP server so user can POST credentials */
-    start_config_server();
+    http_server_start();
 
     while (true)
     {
