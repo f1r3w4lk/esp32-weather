@@ -1,0 +1,219 @@
+/* ===== Base / Layout ===== */
+:root {
+    --blue: #0073cf;
+    --blue-dark: #005fa3;
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --muted: #666;
+    --radius: 10px;
+    --pad: 16px;
+    --max-card-w: 520px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg);
+    color: #0f172a;
+}
+
+/* Container layout: sidebar + main */
+.app-root {
+    display: flex;
+    min-height: 100vh;
+    align-items: stretch;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+    width: 180px;
+    min-width: 120px;
+    background: var(--blue);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 10px;
+}
+
+.sidebar .version {
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.1;
+}
+
+/* ===== Main content ===== */
+.main-content {
+    flex: 1 1 auto;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* center for narrow screens */
+    gap: 12px;
+}
+
+/* Page title */
+h1 {
+    color: var(--blue);
+    margin: 0 0 10px 0;
+    font-size: 1.4rem;
+    text-align: center;
+}
+
+/* ===== Config card =====
+     Cards are compact and centered.
+  */
+.config-section {
+    width: 100%;
+    max-width: var(--max-card-w);
+    background: var(--card);
+    padding: 14px;
+    border-radius: var(--radius);
+    box-shadow: 0 6px 18px rgba(9, 30, 66, 0.06);
+    margin-bottom: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.config-section h2 {
+    margin: 0 0 12px 0;
+    color: var(--blue);
+    font-size: 1.05rem;
+}
+
+/* Label / input */
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"] {
+    width: 100%;
+    padding: 8px 10px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: #fff;
+    font-size: 0.95rem;
+}
+
+/* Small helper button inside card */
+.small-btn {
+    margin-top: 12px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background: var(--blue);
+    color: white;
+}
+
+.small-btn:hover {
+    background: var(--blue-dark);
+}
+
+/* Buttons area (save/load) */
+.buttons {
+    width: 100%;
+    max-width: var(--max-card-w);
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.04);
+}
+
+.status-row strong {
+    color: var(--muted);
+    font-weight: 600
+}
+
+button.primary {
+    padding: 10px 22px;
+    border-radius: 8px;
+    border: none;
+    background: var(--blue);
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+button.primary:hover {
+    background: var(--blue-dark);
+}
+
+button.secondary {
+    padding: 10px 22px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: white;
+    color: var(--muted);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* Radio group (if used later) */
+.radio-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+/* ===== Responsive adjustments ===== */
+@media (min-width: 900px) {
+
+    /* center content but allow bigger spacing on wide screens */
+    .main-content {
+        padding: 36px;
+        align-items: center;
+    }
+}
+
+/* On small screens stack sidebar on top */
+@media (max-width: 780px) {
+    .app-root {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        padding: 12px 10px;
+    }
+
+    .main-content {
+        padding: 18px;
+        align-items: stretch;
+    }
+
+    .buttons {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    button.primary,
+    button.secondary {
+        width: 100%;
+    }
+}

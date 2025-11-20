@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ESP32 Device Setup</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div class="app-root">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="version">ESP32 Config</div>
+        </div>
+
+        <!-- Main content -->
+        <div class="main-content">
+            <h1>Device Configuration</h1>
+
+            <!-- Status Section -->
+            <div class="config-section" id="status-card">
+                <h2>Device Status</h2>
+                <div class="status-row"><strong>Firmware:</strong> <span id="stat_fw"></span></div>
+                <div class="status-row"><strong>Build Date:</strong> <span id="stat_build"></span></div>
+                <div class="status-row"><strong>Chip Model:</strong> <span id="stat_chip"></span></div>
+                <div class="status-row"><strong>Flash (bytes):</strong> <span id="stat_flash"></span></div>
+                <div class="status-row"><strong>Chip ID:</strong> <span id="stat_chipid"></span></div>
+                <div class="status-row"><strong>MAC:</strong> <span id="stat_mac"></span></div>
+                <div class="status-row"><strong>Free heap:</strong> <span id="stat_heap"></span></div>
+            </div>
+
+            <!-- Wi-Fi Section -->
+            <div class="config-section">
+                <h2>Wi-Fi Settings</h2>
+
+                <label>Wi-Fi SSID:</label>
+                <input type="text" id="wifi_ssid">
+
+                <label>Wi-Fi Password:</label>
+                <input type="password" id="wifi_pass">
+            </div>
+
+            <!-- Location Section -->
+            <div class="config-section">
+                <h2>Location Settings</h2>
+
+                <label>Choose a Default Location:</label>
+                <select id="predefined_location" onchange="applyDefaultLocation()">
+                    <option value="">Select...</option>
+                    <option data-lat="-30.0346" data-lon="-51.2177">Porto Alegre, BR</option>
+                    <option data-lat="-23.5505" data-lon="-46.6333">Sao Paulo, BR</option>
+                    <option data-lat="40.7128" data-lon="-74.0060">New York, USA</option>
+                    <option data-lat="35.6895" data-lon="139.6917">Tokyo, Japan</option>
+                    <option data-lat="51.5074" data-lon="-0.1278">London, UK</option>
+                </select>
+
+                <label>Latitude:</label>
+                <input type="number" step="0.000001" id="latitude">
+
+                <label>Longitude:</label>
+                <input type="number" step="0.000001" id="longitude">
+
+                <p id="geo_status" style="font-size: 0.85em; color: var(--muted); margin-top: 8px;"></p>
+            </div>
+
+
+            <!-- Buttons -->
+            <div class="buttons">
+                <button class="secondary" onclick="loadConfig()">Load Config</button>
+                <button class="primary" onclick="saveConfig()">Save Config</button>
+            </div>
+        </div>
+
+    </div>
+    <script src="/script.js"></script>
+</body>
+
+</html>

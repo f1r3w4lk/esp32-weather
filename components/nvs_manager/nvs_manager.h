@@ -6,6 +6,8 @@
 esp_err_t nvs_manager_init(void);
 esp_err_t nvs_manager_save_str(const char *key, const char *value);
 esp_err_t nvs_manager_read_str(const char *key, char *out_value, size_t len);
+esp_err_t nvs_manager_save_double(const char *key, double value);
+esp_err_t nvs_manager_read_double(const char *key, double *out_value);
 esp_err_t nvs_manager_erase_all(void);
 
 #endif

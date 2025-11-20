@@ -112,7 +112,7 @@ static void wifi_init_softap(void)
     while (true)
     {
         ESP_LOGI(TAG, "Waiting new configuration!");
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(2500));
     }
 }
 
