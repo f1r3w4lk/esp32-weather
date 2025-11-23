@@ -32,12 +32,15 @@ static void send_json_obj(httpd_req_t *req, cJSON *obj)
 /* Read request body into a heap buffer (null-terminated). Caller must free. */
 static char *read_request_body(httpd_req_t *req, size_t *out_len)
 {
-    if (out_len) *out_len = 0;
+    if (out_len)
+        *out_len = 0;
     int total_len = req->content_len;
-    if (total_len <= 0) return NULL;
+    if (total_len <= 0)
+        return NULL;
 
     char *buf = malloc(total_len + 1);
-    if (!buf) return NULL;
+    if (!buf)
+        return NULL;
 
     int r = 0;
     int received = 0;
@@ -50,22 +53,23 @@ static char *read_request_body(httpd_req_t *req, size_t *out_len)
         received += r;
     }
     buf[total_len] = '\0';
-    if (out_len) *out_len = (size_t)total_len;
+    if (out_len)
+        *out_len = (size_t)total_len;
     return buf;
 }
 
 /* ----------------- API: /api/config (GET) ----------------- */
 static esp_err_t api_config_get_handler(httpd_req_t *req)
 {
-    char ssid[64] = {0};
-    char pass[64] = {0};
+    char ssid[64] = { 0 };
+    char pass[64] = { 0 };
 
     nvs_manager_read_str("wifi_ssid", ssid, sizeof(ssid));
     nvs_manager_read_str("wifi_pass", pass, sizeof(pass));
 
     cJSON *json = cJSON_CreateObject();
     cJSON_AddStringToObject(json, "ssid", ssid);
-    cJSON_AddStringToObject(json, "pass", pass );
+    cJSON_AddStringToObject(json, "pass", pass);
 
     send_json_obj(req, json);
     return ESP_OK;
@@ -75,57 +79,57 @@ static esp_err_t api_config_get_handler(httpd_req_t *req)
 static esp_err_t api_config_post_handler(httpd_req_t *req)
 {
     size_t body_len = 0;
-   char *body = read_request_body(req, &body_len);
-   if (!body) {
-       httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Empty body or read error");
-       return ESP_FAIL;
-   }
+    char *body = read_request_body(req, &body_len);
+    if (!body) {
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Empty body or read error");
+        return ESP_FAIL;
+    }
 
-   cJSON *root = cJSON_Parse(body);
-   free(body);
-   if (!root) {
-       httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Invalid JSON");
-       return ESP_FAIL;
-   }
+    cJSON *root = cJSON_Parse(body);
+    free(body);
+    if (!root) {
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Invalid JSON");
+        return ESP_FAIL;
+    }
 
-   const cJSON *jssid = cJSON_GetObjectItem(root, "wifi_ssid");
-   const cJSON *jpass = cJSON_GetObjectItem(root, "wifi_password");
-   const cJSON *jlat  = cJSON_GetObjectItem(root, "latitude");
-   const cJSON *jlon  = cJSON_GetObjectItem(root, "longitude");
+    const cJSON *jssid = cJSON_GetObjectItem(root, "wifi_ssid");
+    const cJSON *jpass = cJSON_GetObjectItem(root, "wifi_password");
+    const cJSON *jlat = cJSON_GetObjectItem(root, "latitude");
+    const cJSON *jlon = cJSON_GetObjectItem(root, "longitude");
 
-   if (!cJSON_IsString(jssid) || !cJSON_IsString(jpass) ||
-       !cJSON_IsNumber(jlat) || !cJSON_IsNumber(jlon)) {
+    if (!cJSON_IsString(jssid) || !cJSON_IsString(jpass) || !cJSON_IsNumber(jlat) ||
+        !cJSON_IsNumber(jlon)) {
 
-       cJSON_Delete(root);
-       httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Missing or invalid fields");
-       return ESP_FAIL;
-   }
+        cJSON_Delete(root);
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Missing or invalid fields");
+        return ESP_FAIL;
+    }
 
-   const char *ssid = jssid->valuestring;
-   const char *pass = jpass->valuestring;
-   double latitude  = jlat->valuedouble;
-   double longitude = jlon->valuedouble;
+    const char *ssid = jssid->valuestring;
+    const char *pass = jpass->valuestring;
+    double latitude = jlat->valuedouble;
+    double longitude = jlon->valuedouble;
 
-   ESP_LOGI(TAG, "Saving config: SSID='%s' PASS len=%d, LAT:%f LON:%f",
-            ssid, (int)strlen(pass), latitude, longitude);
+    ESP_LOGI(TAG, "Saving config: SSID='%s' PASS len=%d, LAT:%f LON:%f", ssid, (int)strlen(pass),
+             latitude, longitude);
 
-   // Store in NVS
-   nvs_manager_save_str("wifi_ssid", ssid);
-   nvs_manager_save_str("wifi_pass", pass);
-   nvs_manager_save_double("latitude", latitude);
-   nvs_manager_save_double("longitude", longitude);
+    // Store in NVS
+    nvs_manager_save_str("wifi_ssid", ssid);
+    nvs_manager_save_str("wifi_pass", pass);
+    nvs_manager_save_double("latitude", latitude);
+    nvs_manager_save_double("longitude", longitude);
 
-   cJSON *resp = cJSON_CreateObject();
-   cJSON_AddStringToObject(resp, "status", "ok");
-   cJSON_AddStringToObject(resp, "msg", "Config saved! Restarting...");
-   send_json_obj(req, resp);
+    cJSON *resp = cJSON_CreateObject();
+    cJSON_AddStringToObject(resp, "status", "ok");
+    cJSON_AddStringToObject(resp, "msg", "Config saved! Restarting...");
+    send_json_obj(req, resp);
 
-   cJSON_Delete(root);
+    cJSON_Delete(root);
 
-   /* Give client time to get response */
-   vTaskDelay(pdMS_TO_TICKS(800));
-   esp_restart();
-   return ESP_OK;
+    /* Give client time to get response */
+    vTaskDelay(pdMS_TO_TICKS(800));
+    esp_restart();
+    return ESP_OK;
 }
 
 /* ----------------- API: /api/status (GET) ----------------- */
@@ -146,11 +150,10 @@ static esp_err_t api_status_get_handler(httpd_req_t *req)
     cJSON_AddNumberToObject(root, "flash_size_bytes", info.flash_size);
     cJSON_AddNumberToObject(root, "chip_id", info.chip_id);
 
-   char mac_str[18]; // 6 bytes -> "XX:XX:XX:XX:XX:XX"
-   snprintf(mac_str, sizeof(mac_str),
-             "%02X:%02X:%02X:%02X:%02X:%02X",
-             info.mac_addr[0], info.mac_addr[1], info.mac_addr[2],
-             info.mac_addr[3], info.mac_addr[4], info.mac_addr[5]);
+    char mac_str[18];  // 6 bytes -> "XX:XX:XX:XX:XX:XX"
+    snprintf(mac_str, sizeof(mac_str), "%02X:%02X:%02X:%02X:%02X:%02X", info.mac_addr[0],
+             info.mac_addr[1], info.mac_addr[2], info.mac_addr[3], info.mac_addr[4],
+             info.mac_addr[5]);
     cJSON_AddStringToObject(root, "mac_address", mac_str);
     cJSON_AddNumberToObject(root, "free_heap", info.free_heap);
 
@@ -177,11 +180,9 @@ static esp_err_t file_get_handler(httpd_req_t *req)
     char path[512];
     ESP_LOGI(TAG, "HTTP GET request for URI: %s", req->uri);
 
-
     if (strcmp(req->uri, "/") == 0) {
         strcpy(path, "/index.html");
-    } 
-    else {
+    } else {
         strlcpy(path, req->uri, sizeof(path));
         if (strlen(req->uri) >= sizeof(path)) {
             ESP_LOGW(TAG, "URI too long, truncated: %s", req->uri);
@@ -190,7 +191,8 @@ static esp_err_t file_get_handler(httpd_req_t *req)
 
     // Remove query string
     char *q = strchr(path, '?');
-    if (q) *q = '\0';
+    if (q)
+        *q = '\0';
 
     // Block directory traversal attempts
     if (strstr(path, "..")) {
@@ -200,10 +202,14 @@ static esp_err_t file_get_handler(httpd_req_t *req)
     }
 
     /* Determine MIME */
-    if (strstr(path, ".css")) httpd_resp_set_type(req, "text/css");
-    else if (strstr(path, ".js")) httpd_resp_set_type(req, "application/javascript");
-    else if (strstr(path, ".png")) httpd_resp_set_type(req, "image/png");
-    else httpd_resp_set_type(req, "text/html");
+    if (strstr(path, ".css"))
+        httpd_resp_set_type(req, "text/css");
+    else if (strstr(path, ".js"))
+        httpd_resp_set_type(req, "application/javascript");
+    else if (strstr(path, ".png"))
+        httpd_resp_set_type(req, "image/png");
+    else
+        httpd_resp_set_type(req, "text/html");
 
     char *buf = NULL;
     size_t size = 0;
@@ -227,38 +233,23 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 
 /* ----------------- URI mappings ----------------- */
 static const httpd_uri_t uri_api_status = {
-    .uri = "/api/status",
-    .method = HTTP_GET,
-    .handler = api_status_get_handler,
-    .user_ctx = NULL
+    .uri = "/api/status", .method = HTTP_GET, .handler = api_status_get_handler, .user_ctx = NULL
 };
 
 static const httpd_uri_t uri_api_get = {
-    .uri = "/api/config",
-    .method = HTTP_GET,
-    .handler = api_config_get_handler,
-    .user_ctx = NULL
+    .uri = "/api/config", .method = HTTP_GET, .handler = api_config_get_handler, .user_ctx = NULL
 };
 
 static const httpd_uri_t uri_api_post = {
-    .uri = "/api/config",
-    .method = HTTP_POST,
-    .handler = api_config_post_handler,
-    .user_ctx = NULL
+    .uri = "/api/config", .method = HTTP_POST, .handler = api_config_post_handler, .user_ctx = NULL
 };
 
 static const httpd_uri_t uri_files = {
-    .uri = "/*",
-    .method = HTTP_GET,
-    .handler = file_get_handler,
-    .user_ctx = NULL
+    .uri = "/*", .method = HTTP_GET, .handler = file_get_handler, .user_ctx = NULL
 };
 
 static const httpd_uri_t uri_root = {
-    .uri = "/",
-    .method = HTTP_GET,
-    .handler = root_get_handler,
-    .user_ctx = NULL
+    .uri = "/", .method = HTTP_GET, .handler = root_get_handler, .user_ctx = NULL
 };
 
 /* ----------------- Server start / stop ----------------- */

@@ -6,7 +6,8 @@
 static const char *TAG = "NVS_MANAGER";
 static bool is_initialized = false;
 
-esp_err_t nvs_manager_init(void) {
+esp_err_t nvs_manager_init(void)
+{
     esp_err_t ret = ESP_OK;
     if (!is_initialized) {
         ret = nvs_flash_init();
@@ -19,29 +20,35 @@ esp_err_t nvs_manager_init(void) {
     return ret;
 }
 
-esp_err_t nvs_manager_save_str(const char *key, const char *value) {
+esp_err_t nvs_manager_save_str(const char *key, const char *value)
+{
     nvs_handle_t handle;
     esp_err_t err = nvs_open("nvs", NVS_READWRITE, &handle);
-    if (err != ESP_OK) return err;
+    if (err != ESP_OK)
+        return err;
 
     err = nvs_set_str(handle, key, value);
-    if (err == ESP_OK) err = nvs_commit(handle);
+    if (err == ESP_OK)
+        err = nvs_commit(handle);
     nvs_close(handle);
     ESP_LOGI(TAG, "Saved key='%s', value='%s'", key, value);
     return err;
 }
 
-esp_err_t nvs_manager_read_str(const char *key, char *out_value, size_t len) {
+esp_err_t nvs_manager_read_str(const char *key, char *out_value, size_t len)
+{
     nvs_handle_t handle;
     esp_err_t err = nvs_open("nvs", NVS_READONLY, &handle);
-    if (err != ESP_OK) return err;
+    if (err != ESP_OK)
+        return err;
 
     err = nvs_get_str(handle, key, out_value, &len);
     nvs_close(handle);
     return err;
 }
 
-esp_err_t nvs_manager_save_double(const char *key, double value) {
+esp_err_t nvs_manager_save_double(const char *key, double value)
+{
     nvs_handle_t handle;
     esp_err_t err = nvs_open("nvs", NVS_READWRITE, &handle);
     if (err != ESP_OK) {
@@ -64,7 +71,8 @@ esp_err_t nvs_manager_save_double(const char *key, double value) {
     return err;
 }
 
-esp_err_t nvs_manager_read_double(const char *key, double *out_value) {
+esp_err_t nvs_manager_read_double(const char *key, double *out_value)
+{
     if (!out_value) {
         return ESP_ERR_INVALID_ARG;
     }
@@ -86,7 +94,8 @@ esp_err_t nvs_manager_read_double(const char *key, double *out_value) {
     return err;
 }
 
-esp_err_t nvs_manager_erase_all(void) {
+esp_err_t nvs_manager_erase_all(void)
+{
     nvs_handle_t handle;
     esp_err_t err = nvs_open("nvs", NVS_READWRITE, &handle);
     if (err == ESP_OK) {

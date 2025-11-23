@@ -14,15 +14,16 @@ static bool wifi_initialized = false;
 
 /* --- Forward declarations --- */
 static void base_init_once(void);
-static void wifi_event_handler(void *arg, esp_event_base_t event_base,
-                               int32_t event_id, void *event_data);
+static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id,
+                               void *event_data);
 static void wifi_init_sta(const char *ssid, const char *pass);
 static void wifi_init_softap(void);
 
 /* --- base init (run once) --- */
 static void base_init_once(void)
 {
-    if (wifi_initialized) return;
+    if (wifi_initialized)
+        return;
 
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -35,8 +36,8 @@ static void base_init_once(void)
 }
 
 /* --- Wi-Fi event handler --- */
-static void wifi_event_handler(void *arg, esp_event_base_t event_base,
-                               int32_t event_id, void *event_data)
+static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id,
+                               void *event_data)
 {
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
         esp_wifi_connect();
@@ -58,20 +59,14 @@ static void wifi_init_sta(const char *ssid, const char *pass)
 
     esp_event_handler_instance_t instance_any_id;
     esp_event_handler_instance_t instance_got_ip;
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
-                                                        ESP_EVENT_ANY_ID,
-                                                        &wifi_event_handler,
-                                                        NULL,
-                                                        &instance_any_id));
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
-                                                        IP_EVENT_STA_GOT_IP,
-                                                        &wifi_event_handler,
-                                                        NULL,
-                                                        &instance_got_ip));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(
+        WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, &instance_any_id));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(
+        IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL, &instance_got_ip));
 
     wifi_config_t wifi_config = { 0 };
-    strncpy((char *)wifi_config.sta.ssid, ssid, sizeof(wifi_config.sta.ssid)-1);
-    strncpy((char *)wifi_config.sta.password, pass, sizeof(wifi_config.sta.password)-1);
+    strncpy((char *)wifi_config.sta.ssid, ssid, sizeof(wifi_config.sta.ssid) - 1);
+    strncpy((char *)wifi_config.sta.password, pass, sizeof(wifi_config.sta.password) - 1);
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
@@ -96,7 +91,7 @@ static void wifi_init_softap(void)
         },
     };
     const char *ap_pass = "12345678";
-    strncpy((char *)ap_config.ap.password, ap_pass, sizeof(ap_config.ap.password)-1);
+    strncpy((char *)ap_config.ap.password, ap_pass, sizeof(ap_config.ap.password) - 1);
 
     if (strlen(ap_pass) == 0) {
         ap_config.ap.authmode = WIFI_AUTH_OPEN;
@@ -109,8 +104,7 @@ static void wifi_init_softap(void)
     /* start HTTP server so user can POST credentials */
     http_server_start();
 
-    while (true)
-    {
+    while (true) {
         ESP_LOGI(TAG, "Waiting new configuration!");
         vTaskDelay(pdMS_TO_TICKS(2500));
     }
@@ -133,7 +127,7 @@ void wifi_manager_init(bool force_config)
     }
 
     /* Normal case – attempt to read credentials */
-    char ssid[64] = {0}, pass[64] = {0};
+    char ssid[64] = { 0 }, pass[64] = { 0 };
     esp_err_t r1 = nvs_manager_read_str("wifi_ssid", ssid, sizeof(ssid));
     esp_err_t r2 = nvs_manager_read_str("wifi_pass", pass, sizeof(pass));
 

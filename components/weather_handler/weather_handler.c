@@ -7,12 +7,12 @@
 
 static const char *TAG = "WEATHER_DATA";
 
-// Buffer para resposta HTTP (4 KB é suficiente para Open-Meteo)
+// Reponse buffer for HTTP (4 KB is enough to Open-Meteo)
 #define WEATHER_HTTP_BUFFER_SIZE 4096
 static char http_response[WEATHER_HTTP_BUFFER_SIZE];
 
 /**
- * @brief Constrói a URL da API Open-Meteo.
+ * @brief Construct an URL to API Open-Meteo.
  */
 static void build_weather_url(char *url_out, size_t max_len, float lat, float lon)
 {
@@ -24,7 +24,7 @@ static void build_weather_url(char *url_out, size_t max_len, float lat, float lo
 }
 
 /**
- * @brief Realiza o parsing do JSON retornado pela API.
+ * @brief JSON Parsing from Open-Meteo API
  */
 static esp_err_t parse_weather_json(const char *json, weather_data_t *out)
 {
@@ -52,7 +52,7 @@ static esp_err_t parse_weather_json(const char *json, weather_data_t *out)
 }
 
 /**
- * @brief Executa a requisição HTTP e faz o parsing dos dados.
+ * @brief Execute a HTTP requests and parsing
  */
 esp_err_t weather_data_fetch(float latitude, float longitude, weather_data_t *out_data)
 {
@@ -85,7 +85,7 @@ esp_err_t weather_data_fetch(float latitude, float longitude, weather_data_t *ou
 }
 
 /**
- * @brief Conversão simples de código WMO → descrição textual.
+ * @brief Simple conversion of the WMO code
  */
 const char *weather_data_wmo_description(int code)
 {

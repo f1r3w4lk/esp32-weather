@@ -7,10 +7,22 @@
 extern "C" {
 #endif
 
-// Initialize gpio handler
+/**
+ * @brief Initialize the GPIO handler module.
+ *
+ * This function configures the GPIO pins used by the system,
+ * such as buttons or other digital inputs.
+ */
 void gpio_handler_init(void);
 
-/* Read Config button */
+/**
+ * @brief Check if the configuration button is being pressed.
+ *
+ * This function reads the state of the hardware configuration button.
+ *
+ * @return true if the button is currently pressed,
+ *         false otherwise.
+ */
 bool gpio_handler_is_config_button_pressed(void);
 
 #ifdef __cplusplus

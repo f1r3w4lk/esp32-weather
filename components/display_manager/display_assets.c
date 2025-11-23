@@ -1,9 +1,9 @@
 #include "display_assets.h"
 
-// Fonte 6x8 com caracteres ASCII básicos (32–127)
+// Font 6x8 (px/px) with basic ASCII characters (32–127)
 const uint8_t font6x8[][6] = {
-    // Cada caractere: 6 bytes (largura 6, altura 8)
-    // Baseado na clássica fonte do MSX/PC BIOS
+    // Each character: 6 bytes (Width 6, Height 8)
+    // Based on font classic MSX/PC BIOS
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },  // 32
     { 0x00, 0x00, 0x5F, 0x00, 0x00, 0x00 },  // 33 !
     { 0x00, 0x07, 0x00, 0x07, 0x00, 0x00 },  // 34 "

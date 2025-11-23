@@ -8,18 +8,33 @@ extern "C" {
 #endif
 
 /**
- * @brief Start the HTTP server (mounts FS if needed).
- * 
- * Returns ESP_OK on success or esp_err_t on failure.
+ * @file http_server.h
+ * @brief Embedded Web Server for configuration and API handling.
+ *
+ * This module initializes and manages the internal HTTP server
+ * responsible for serving configuration pages and REST API endpoints.
+ */
+
+/**
+ * @brief Start the HTTP server.
+ *
+ * Automatically mounts and verifies filesystem availability when required.
+ *
+ * @return
+ *  - ESP_OK on success.
+ *  - esp_err_t error code on failure.
  */
 esp_err_t http_server_start(void);
 
-/** Stop the HTTP server (if running). */
+/**
+ * @brief Stop the HTTP server if currently running.
+ *
+ * Releases all resources allocated to the server instance.
+ */
 void http_server_stop(void);
 
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif  // HTTP_SERVER_H

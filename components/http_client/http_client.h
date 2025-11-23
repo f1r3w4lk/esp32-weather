@@ -10,42 +10,42 @@ extern "C" {
 
 /**
  * @file http_client.h
- * @brief Módulo genérico para requisições HTTP (GET e POST) com ESP-IDF.
+ * @brief Generic HTTP request module (GET and POST) for ESP-IDF.
  *
- * Este módulo fornece funções simplificadas para enviar requisições HTTP
- * e armazenar as respostas em um buffer fornecido pelo usuário.
+ * This module provides simplified functions to perform HTTP requests
+ * and store responses in a user-supplied buffer.
  *
- * Ele suporta HTTPS com o bundle interno de certificados da ESP-IDF.
+ * HTTPS is supported using ESP-IDF's built-in certificate bundle.
  */
 
 /**
- * @brief Executa uma requisição HTTP GET.
+ * @brief Perform an HTTP GET request.
  *
- * @param url              URL completa do recurso (ex: "https://api.open-meteo.com/v1/...").
- * @param response_buffer  Buffer de destino para armazenar o corpo da resposta.
- * @param max_len          Tamanho máximo do buffer de resposta.
+ * @param url              Full request URL (e.g., "https://api.open-meteo.com/v1/...").
+ * @param response_buffer  Destination buffer to store the response body.
+ * @param max_len          Maximum buffer size available for the response.
  *
  * @return
- *  - ESP_OK: sucesso.
- *  - ESP_ERR_INVALID_ARG: argumentos inválidos.
- *  - ESP_FAIL: falha geral.
- *  - Outros códigos de erro do cliente HTTP.
+ *  - ESP_OK on success.
+ *  - ESP_ERR_INVALID_ARG for invalid arguments.
+ *  - ESP_FAIL for general failure.
+ *  - Additional HTTP client error codes may be returned.
  */
 esp_err_t http_get(const char *url, char *response_buffer, size_t max_len);
 
 /**
- * @brief Executa uma requisição HTTP POST.
+ * @brief Perform an HTTP POST request.
  *
- * @param url              URL completa do destino (ex: "https://api.callmebot.com/...").
- * @param post_data        Corpo da requisição (geralmente JSON).
- * @param response_buffer  Buffer de destino para armazenar a resposta do servidor.
- * @param max_len          Tamanho máximo do buffer de resposta.
+ * @param url              Full request URL (e.g., "https://api.callmebot.com/...").
+ * @param post_data        Request body (typically JSON).
+ * @param response_buffer  Destination buffer to store the server response.
+ * @param max_len          Maximum buffer size available for the response.
  *
  * @return
- *  - ESP_OK: sucesso.
- *  - ESP_ERR_INVALID_ARG: argumentos inválidos.
- *  - ESP_FAIL: falha geral.
- *  - Outros códigos de erro do cliente HTTP.
+ *  - ESP_OK on success.
+ *  - ESP_ERR_INVALID_ARG for invalid arguments.
+ *  - ESP_FAIL for general failure.
+ *  - Additional HTTP client error codes may be returned.
  */
 esp_err_t http_post(const char *url, const char *post_data, char *response_buffer, size_t max_len);
 

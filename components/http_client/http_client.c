@@ -7,7 +7,7 @@
 static const char *TAG = "HTTP_CLIENT";
 
 /**
- * @brief Estrutura auxiliar para armazenar o estado de uma requisição HTTP
+ * @brief Help struct to store the HTTP requests state
  */
 typedef struct {
     char *buffer;
@@ -16,7 +16,7 @@ typedef struct {
 } http_response_ctx_t;
 
 /**
- * @brief Handler genérico de eventos HTTP (GET/POST)
+ * @brief Generic handler of HTTP (GET/POST) events
  */
 static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 {
@@ -64,7 +64,7 @@ static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 }
 
 /**
- * @brief Executa uma requisição HTTP GET genérica
+ * @brief Execute one HTTP GET request
  */
 esp_err_t http_get(const char *url, char *response_buffer, size_t max_len)
 {
@@ -104,7 +104,7 @@ esp_err_t http_get(const char *url, char *response_buffer, size_t max_len)
 }
 
 /**
- * @brief Executa uma requisição HTTP POST genérica
+ * @brief Execute one HTTP POST request
  */
 esp_err_t http_post(const char *url, const char *post_data, char *response_buffer, size_t max_len)
 {

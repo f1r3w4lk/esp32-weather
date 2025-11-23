@@ -1,3 +1,12 @@
+/**
+ * @file main.c
+ * @brief Main application entry point for ESP32 Weather Display v2.
+ *
+ * This module initializes hardware interfaces, connects to Wi-Fi,
+ * retrieves configuration parameters, periodically fetches weather data
+ * from the Open-Meteo API and displays it on the OLED screen.
+ */
+
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -14,23 +23,36 @@
 
 static const char *TAG = "MAIN";
 
+/**
+ * @brief Main application logic (FreeRTOS entry point).
+ *
+ * Responsibilities:
+ *  - Initialize GPIO controller for button reading.
+ *  - Initialize display and show Wi-Fi connection status.
+ *  - Connect to Wi-Fi (or enter configuration AP mode).
+ *  - Load saved latitude/longitude from NVS (fallback to defaults).
+ *  - Periodically fetch weather data from Open-Meteo API.
+ *  - Decode weather response and update OLED rendering.
+ *
+ * The task runs indefinitely, polling weather data every 10 minutes.
+ */
 void app_main(void)
 {
     ESP_LOGI(TAG, "==== ESP32 Weather Display v2 ====");
 
-    // Gpio Handler Initialization
+    // GPIO Handler Initialization
     gpio_handler_init();
 
     /* Display Initialization */
     display_init();
 
-    // Show Icon and Text of WiFi Connected
+    // Show Icon and Text of WiFi Connecting
     display_show_wifi_connecting();
 
     // Start the WiFi Connection, check if button pressed if yes, enter in config mode
     wifi_manager_init(gpio_handler_is_config_button_pressed());
 
-    // Wait WiFi Connection before follow the next step (the best approach is substitute by event callback)
+    // Wait WiFi Connection before follow the next step
     vTaskDelay(pdMS_TO_TICKS(10000));
 
     // Show Icon and Text of WiFi Connected
@@ -38,14 +60,14 @@ void app_main(void)
 
     // Initialize the nvs_manager
     nvs_manager_init();
-    
+
     /* Get saved lat long from NVS */
     double latitude = 0.0, longitude = 0.0;
-    if (nvs_manager_read_double("latitude", &latitude) != ESP_OK){
+    if (nvs_manager_read_double("latitude", &latitude) != ESP_OK) {
         latitude = DEFAULT_LATITUDE;
     }
 
-    if (nvs_manager_read_double("longitude", &longitude) != ESP_OK){
+    if (nvs_manager_read_double("longitude", &longitude) != ESP_OK) {
         longitude = DEFAULT_LONGITUDE;
     }
 

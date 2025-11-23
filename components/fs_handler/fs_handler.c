@@ -18,21 +18,21 @@ static bool fs_mounted = false;
 esp_err_t fs_handler_init(void)
 {
     if (fs_mounted) {
-        ESP_LOGI(TAG, "LittleFS já montado");
+        ESP_LOGI(TAG, "LittleFS mounted");
         return ESP_OK;
     }
 
     esp_vfs_littlefs_conf_t conf = {
         .base_path = "/littlefs",
         .partition_label = LITTLEFS_PARTITION_NAME,
-        .format_if_mount_failed = true,   // format if fail
+        .format_if_mount_failed = true,  // format if fail
         .dont_mount = false,
     };
 
     esp_err_t ret = esp_vfs_littlefs_register(&conf);
 
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Erro ao montar LittleFS (%s)", esp_err_to_name(ret));
+        ESP_LOGE(TAG, "Error when attempt to mount LittleFS (%s)", esp_err_to_name(ret));
         return ret;
     }
 
@@ -40,7 +40,7 @@ esp_err_t fs_handler_init(void)
     ret = esp_littlefs_info(LITTLEFS_PARTITION_NAME, &total, &used);
 
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Erro ao obter info do FS (%s)", esp_err_to_name(ret));
+        ESP_LOGE(TAG, "Error when attempt to get info from FS (%s)", esp_err_to_name(ret));
         return ret;
     }
 
@@ -52,13 +52,13 @@ esp_err_t fs_handler_init(void)
     return ESP_OK;
 }
 
-
 /* =======================================================================
  * Read a file
  * ======================================================================= */
 esp_err_t fs_handler_read_file(const char *path, char **out_buf, size_t *out_len)
 {
-    if (!fs_mounted) return ESP_FAIL;
+    if (!fs_mounted)
+        return ESP_FAIL;
 
     char full_path[128];
     snprintf(full_path, sizeof(full_path), "/littlefs/%s", path);
@@ -92,13 +92,13 @@ esp_err_t fs_handler_read_file(const char *path, char **out_buf, size_t *out_len
     return ESP_OK;
 }
 
-
 /* =======================================================================
  * Write a file
  * ======================================================================= */
 esp_err_t fs_handler_write_file(const char *path, const char *data, size_t len)
 {
-    if (!fs_mounted) return ESP_FAIL;
+    if (!fs_mounted)
+        return ESP_FAIL;
 
     char full_path[128];
     snprintf(full_path, sizeof(full_path), "/littlefs/%s", path);
@@ -117,13 +117,13 @@ esp_err_t fs_handler_write_file(const char *path, const char *data, size_t len)
     return ESP_OK;
 }
 
-
 /* =======================================================================
  * Delete a file
  * ======================================================================= */
 esp_err_t fs_handler_delete_file(const char *path)
 {
-    if (!fs_mounted) return ESP_FAIL;
+    if (!fs_mounted)
+        return ESP_FAIL;
 
     char full_path[128];
     snprintf(full_path, sizeof(full_path), "/littlefs/%s", path);
@@ -137,13 +137,13 @@ esp_err_t fs_handler_delete_file(const char *path)
     return ESP_FAIL;
 }
 
-
 /* =======================================================================
  * Verify if file exists
  * ======================================================================= */
 bool fs_handler_exists(const char *path)
 {
-    if (!fs_mounted) return false;
+    if (!fs_mounted)
+        return false;
 
     char full_path[128];
     snprintf(full_path, sizeof(full_path), "/littlefs/%s", path);
@@ -152,13 +152,13 @@ bool fs_handler_exists(const char *path)
     return (stat(full_path, &st) == 0);
 }
 
-
 /* =======================================================================
  * List all files in root
  * ======================================================================= */
 void fs_handler_list_files(void)
 {
-    if (!fs_mounted) return;
+    if (!fs_mounted)
+        return;
 
     DIR *dir = opendir("/littlefs");
     if (!dir) {
